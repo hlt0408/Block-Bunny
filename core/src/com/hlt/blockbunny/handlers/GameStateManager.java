@@ -1,0 +1,61 @@
+package com.hlt.blockbunny.handlers;
+
+import com.hlt.blockbunny.main.Game;
+import com.hlt.blockbunny.states.GameState;
+import com.hlt.blockbunny.states.LevelSelect;
+import com.hlt.blockbunny.states.Menu;
+import com.hlt.blockbunny.states.Play;
+
+import java.util.Stack;
+
+/**
+ * Created by hlt04 on 3/11/15.
+ * Manage 3 gamestate: Menu, Play, Level_Select
+ */
+public class GameStateManager {
+
+    private Game game;
+
+    private Stack<GameState> gameStates;
+
+    public static final int MENU = 83774392;
+    public static final int PLAY = 388031654;
+    public static final int LEVEL_SELECT = -9238732;
+
+    public GameStateManager(Game game) {
+        this.game = game;
+        gameStates = new Stack<GameState>();
+        pushState(MENU);
+    }
+
+    public Game game() { return game; }
+
+    public void update(float dt) {
+        gameStates.peek().update(dt);
+    }
+
+    public void render() {
+        gameStates.peek().render();
+    }
+
+    private GameState getState(int state) {
+        if (state == PLAY) return new Play(this);
+        if (state == MENU) return new Menu(this);
+        if (state == LEVEL_SELECT) return new LevelSelect(this);
+        return null;
+    }
+
+    public void setState(int state) {
+        popState();
+        pushState(state);
+    }
+
+    public void pushState(int state) {
+        gameStates.push(getState(state));
+    }
+
+    public void popState() {
+        GameState g = gameStates.pop();
+        g.dispose();
+    }
+}
